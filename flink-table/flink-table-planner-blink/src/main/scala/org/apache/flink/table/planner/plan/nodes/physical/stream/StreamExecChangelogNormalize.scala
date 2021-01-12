@@ -93,7 +93,7 @@ class StreamExecChangelogNormalize(
     val tableConfig = planner.getTableConfig
     val isMiniBatchEnabled = tableConfig.getConfiguration.getBoolean(
       ExecutionConfigOptions.TABLE_EXEC_MINIBATCH_ENABLED)
-    val stateIdleTime = tableConfig.getIdleStateRetention.toMillis
+    val stateIdleTime = tableConfig.getDuplicateIdleStateRetention.toMillis
     val operator = if (isMiniBatchEnabled) {
       val exeConfig = planner.getExecEnv.getConfig
       val rowSerializer = rowTypeInfo.createSerializer(exeConfig)

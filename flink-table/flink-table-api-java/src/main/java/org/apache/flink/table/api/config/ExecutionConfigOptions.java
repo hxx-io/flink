@@ -56,6 +56,19 @@ public class ExecutionConfigOptions {
                                     + "NOTE: Cleaning up state requires additional overhead for bookkeeping. "
                                     + "Default value is 0, which means that it will never clean up state.");
 
+    @Documentation.TableOption(execMode = Documentation.ExecMode.STREAMING)
+    public static final ConfigOption<Duration> DUPLICATE_IDLE_STATE_RETENTION =
+            key("table.exec.cdc-events-duplicate.state.ttl")
+                    .durationType()
+                    .defaultValue(Duration.ofMillis(0))
+                    .withDescription(
+                            "Specifies a minimum time interval for how long idle state "
+                                    + "(i.e. state which was not updated), will be retained. State will never be "
+                                    + "cleared until it was idle for less than the minimum time, and will be cleared "
+                                    + "at some time after it was idle. Default is never clean-up the state. "
+                                    + "NOTE: Cleaning up state requires additional overhead for bookkeeping. "
+                                    + "Default value is 0, which means that it will never clean up state.");
+
     // ------------------------------------------------------------------------
     //  Source Options
     // ------------------------------------------------------------------------

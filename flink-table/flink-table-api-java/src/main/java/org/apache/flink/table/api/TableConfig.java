@@ -313,6 +313,11 @@ public class TableConfig {
         return configuration.get(ExecutionConfigOptions.IDLE_STATE_RETENTION);
     }
 
+    /** @return The duration until state which was not updated will be retained. */
+    public Duration getDuplicateIdleStateRetention() {
+        return configuration.get(ExecutionConfigOptions.DUPLICATE_IDLE_STATE_RETENTION);
+    }
+
     /**
      * Sets a custom user parameter that can be accessed via {@link
      * org.apache.flink.table.functions.FunctionContext#getJobParameter(String, String)}.

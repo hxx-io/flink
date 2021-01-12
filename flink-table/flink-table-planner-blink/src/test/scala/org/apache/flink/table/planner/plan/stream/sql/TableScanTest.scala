@@ -290,6 +290,8 @@ class TableScanTest extends TableTestBase {
   def testJoinOnChangelogSourceWithEventsDuplicate(): Unit = {
     util.tableEnv.getConfig.getConfiguration.setBoolean(
       ExecutionConfigOptions.TABLE_EXEC_SOURCE_CDC_EVENTS_DUPLICATE, true)
+    util.tableEnv.getConfig.getConfiguration.setString(
+      "table.exec.cdc-events-duplicate.state.ttl", "1 h")
     verifyJoinOnSource("I,UB,UA")
   }
 

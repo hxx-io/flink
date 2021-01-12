@@ -66,6 +66,7 @@ public class TableConfigTest {
     @Test
     public void testSetAndGetIdleStateRetention() {
         configuration.setString("table.exec.state.ttl", "1 h");
+        configuration.setString("table.exec.cdc-events-duplicate.state.ttl", "1 h");
         configByConfiguration.addConfiguration(configuration);
         configByMethod.setIdleStateRetention(Duration.ofHours(1));
 
