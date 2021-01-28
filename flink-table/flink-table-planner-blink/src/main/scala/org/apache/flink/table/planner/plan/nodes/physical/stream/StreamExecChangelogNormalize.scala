@@ -30,9 +30,8 @@ import org.apache.flink.table.planner.delegation.StreamPlanner
 import org.apache.flink.table.planner.plan.nodes.exec.{ExecNode, StreamExecNode}
 import org.apache.flink.table.planner.plan.utils.{AggregateUtil, ChangelogPlanUtils, KeySelectorUtil}
 import org.apache.flink.table.runtime.operators.bundle.KeyedMapBundleOperator
-import org.apache.flink.table.runtime.operators.deduplicate.{ProcTimeDeduplicateKeepLastRowFunction, ProcTimeMiniBatchDeduplicateKeepLastRowFunction}
+import org.apache.flink.table.runtime.operators.deduplicate.{ProcTimeDeduplicateKeepFirstRowFunction, ProcTimeDeduplicateKeepLastRowFunction, ProcTimeMiniBatchDeduplicateKeepFirstRowFunction, ProcTimeMiniBatchDeduplicateKeepLastRowFunction}
 import org.apache.flink.table.runtime.typeutils.InternalTypeInfo
-
 import java.util
 
 import scala.collection.JavaConversions._
@@ -97,24 +96,15 @@ class StreamExecChangelogNormalize(
     val operator = if (isMiniBatchEnabled) {
       val exeConfig = planner.getExecEnv.getConfig
       val rowSerializer = rowTypeInfo.createSerializer(exeConfig)
-      val processFunction = new ProcTimeMiniBatchDeduplicateKeepLastRowFunction(
-        rowTypeInfo,
+      val processFunction = new ProcTimeMiniBatchDeduplicateKeepFirstRowFunction(
         rowSerializer,
-        stateIdleTime,
-        generateUpdateBefore,
-        true,   // generateInsert
-        false)  // inputInsertOnly
+        stateIdleTime)
       val trigger = AggregateUtil.createMiniBatchTrigger(tableConfig)
       new KeyedMapBundleOperator(
         processFunction,
         trigger)
     } else {
-      val processFunction = new ProcTimeDeduplicateKeepLastRowFunction(
-        rowTypeInfo,
-        stateIdleTime,
-        generateUpdateBefore,
-        true,   // generateInsert
-        false)  // inputInsertOnly
+      val processFunction = new ProcTimeDeduplicateKeepFirstRowFunction(stateIdleTime)
       new KeyedProcessOperator[RowData, RowData, RowData](processFunction)
     }
 
