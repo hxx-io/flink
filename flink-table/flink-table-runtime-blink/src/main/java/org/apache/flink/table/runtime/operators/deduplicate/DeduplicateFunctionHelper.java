@@ -136,12 +136,14 @@ class DeduplicateFunctionHelper {
             RowData currentRow, ValueState<Boolean> state, Collector<RowData> out)
             throws Exception {
 
-        checkInsertOnly(currentRow);
+        // checkInsertOnly(currentRow);
         // ignore record if it is not first row
-        if (state.value() != null) {
-            return;
+        if (currentRow.getRowKind() == RowKind.INSERT) {
+            if (state.value() != null) {
+                return;
+            }
+            state.update(true);
         }
-        state.update(true);
         // emit the first row which is INSERT message
         out.collect(currentRow);
     }
