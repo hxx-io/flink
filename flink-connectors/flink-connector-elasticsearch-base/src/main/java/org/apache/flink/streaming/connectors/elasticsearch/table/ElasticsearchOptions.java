@@ -146,6 +146,10 @@ public class ElasticsearchOptions {
                             "Elasticsearch connector requires to specify a format.\n"
                                     + "The format must produce a valid json document. \n"
                                     + "By default uses built-in 'json' format. Please refer to Table Formats section for more details.");
-
+    public static final ConfigOption<Boolean> RETRACTION_DELETE =
+            ConfigOptions.key("sink.retraction.delete")
+                    .booleanType()
+                    .defaultValue(true)
+                    .withDescription("retraction delete flag");
     private ElasticsearchOptions() {}
 }

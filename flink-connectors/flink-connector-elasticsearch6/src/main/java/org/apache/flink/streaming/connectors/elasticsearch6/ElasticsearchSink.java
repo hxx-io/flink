@@ -221,6 +221,16 @@ public class ElasticsearchSink<T> extends ElasticsearchSinkBase<T, RestHighLevel
         }
 
         /**
+         * Sets a retraction delete for custom client configuration.
+         *
+         * @param retractionDelete the factory that configures the rest client.
+         */
+        public void setRetractionDelete(Boolean retractionDelete) {
+            this.bulkRequestsConfig.put(
+                    CONFIG_KEY_RETRACTION_DELETE, String.valueOf(retractionDelete));
+        }
+
+        /**
          * Creates the Elasticsearch sink.
          *
          * @return the created Elasticsearch sink.

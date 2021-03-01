@@ -26,6 +26,8 @@ import org.apache.flink.runtime.state.FunctionInitializationContext;
 import org.apache.flink.runtime.state.FunctionSnapshotContext;
 import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.apache.flink.table.data.RowData;
+import org.apache.flink.types.RowKind;
 import org.apache.flink.util.InstantiationUtil;
 
 import org.elasticsearch.action.ActionRequest;
@@ -39,6 +41,8 @@ import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.rest.RestStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -71,6 +75,8 @@ public abstract class ElasticsearchSinkBase<T, C extends AutoCloseable> extends 
 
     private static final long serialVersionUID = -1007596293618451942L;
 
+
+    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchSinkBase.class);
     // ------------------------------------------------------------------------
     //  Internal bulk processor configuration
     // ------------------------------------------------------------------------
@@ -82,6 +88,7 @@ public abstract class ElasticsearchSinkBase<T, C extends AutoCloseable> extends 
     public static final String CONFIG_KEY_BULK_FLUSH_BACKOFF_TYPE = "bulk.flush.backoff.type";
     public static final String CONFIG_KEY_BULK_FLUSH_BACKOFF_RETRIES = "bulk.flush.backoff.retries";
     public static final String CONFIG_KEY_BULK_FLUSH_BACKOFF_DELAY = "bulk.flush.backoff.delay";
+    public static final String CONFIG_KEY_RETRACTION_DELETE = "sink.retraction.delete";
 
     /** Used to control whether the retry delay should increase exponentially or remain constant. */
     @PublicEvolving
@@ -322,11 +329,19 @@ public abstract class ElasticsearchSinkBase<T, C extends AutoCloseable> extends 
                         bulkProcessor, flushOnCheckpoint, numPendingRequests);
         failureRequestIndexer = new BufferingNoOpRequestIndexer();
         elasticsearchSinkFunction.open();
+        logger.info("{}==============================={}",userConfig.get(CONFIG_KEY_RETRACTION_DELETE)+"禁用回撤");
     }
 
     @Override
     public void invoke(T value, Context context) throws Exception {
         checkAsyncErrorsAndRequests();
+        if("true".equalsIgnoreCase(userConfig.get(CONFIG_KEY_RETRACTION_DELETE))
+                && value instanceof RowData){
+            ((RowData) value).setRowKind(RowKind.UPDATE_AFTER);
+            // logger.info(userConfig.get(CONFIG_KEY_RETRACTION_DELETE)+"===============================禁用回撤=======================");
+        }else{
+            // logger.info(userConfig.get(CONFIG_KEY_RETRACTION_DELETE)+"===============================不禁用回撤=======================");
+        }
         elasticsearchSinkFunction.process(value, getRuntimeContext(), requestIndexer);
     }
 

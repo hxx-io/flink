@@ -137,6 +137,10 @@ class ElasticsearchConfiguration {
         return !config.get(ElasticsearchOptions.FLUSH_ON_CHECKPOINT_OPTION);
     }
 
+    public boolean isRetractionDelete() {
+        return config.get(ElasticsearchOptions.RETRACTION_DELETE);
+    }
+
     public String getIndex() {
         return config.get(ElasticsearchOptions.INDEX_OPTION);
     }

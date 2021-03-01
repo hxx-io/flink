@@ -52,8 +52,8 @@ import static org.apache.flink.table.runtime.util.StreamRecordUtils.updateBefore
 /** Base Tests for all subclass of {@link AbstractTopNFunction}. */
 abstract class TopNFunctionTestBase {
 
-    Time minTime = Time.milliseconds(10);
-    Time maxTime = Time.milliseconds(20);
+    Time minTime = Time.milliseconds(0);
+    Time maxTime = Time.milliseconds(0);
     long cacheSize = 10000L;
 
     InternalTypeInfo<RowData> inputRowType =

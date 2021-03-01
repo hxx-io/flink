@@ -155,6 +155,8 @@ final class Elasticsearch6DynamicSink implements DynamicTableSink {
                         new DefaultRestClientFactory(config.getPathPrefix().orElse(null)));
             }
 
+            builder.setRetractionDelete(config.isRetractionDelete());
+
             final ElasticsearchSink<RowData> sink = builder.build();
 
             if (config.isDisableFlushOnCheckpoint()) {
